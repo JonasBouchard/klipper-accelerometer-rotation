@@ -1,0 +1,5 @@
+[update_manager accelerometer_rotation]
+type: git_repo
+path: __REPO_PATH__
+origin: __REPO_ORIGIN__
+is_system_service: False
