@@ -55,7 +55,7 @@ Automatic install:
 
 ```bash
 cd ~
-git clone https://github.com/JonasBouchard/klipper-accelerometer-rotation.git klipper-accelerometer-rotation
+git clone https://github.com/JonasBouchard/klipper-accelerometer-rotation.git
 cd klipper-accelerometer-rotation
 chmod +x install.sh
 ./install.sh
