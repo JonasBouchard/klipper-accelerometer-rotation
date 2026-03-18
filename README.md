@@ -61,12 +61,6 @@ chmod +x install.sh
 ./install.sh
 ```
 
-If your paths differ from the usual setup:
-
-```bash
-./install.sh [-k <klipper path>] [-s <klipper service name>] [-m <moonraker service name>] [-c <moonraker config dir>]
-```
-
 What the installer does:
 
 1. Stops Klipper.
