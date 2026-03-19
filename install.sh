@@ -5,8 +5,7 @@ KLIPPER_PATH="${HOME}/klipper"
 KLIPPER_SERVICE_NAME="klipper"
 MOONRAKER_SERVICE_NAME="moonraker"
 MOONRAKER_CONFIG_DIR="${HOME}/printer_data/config"
-BACKUP_DIR_NAME=".accelerometer_rotation_backup"
-MODULES=(adxl345.py lis2dw.py mpu9250.py icm20948.py bmi160.py)
+MODULES=(accelerometer_rotation.py)
 
 usage() {
     echo "Usage: $0 [-k <klipper path>] [-s <klipper service name>] [-m <moonraker service name>] [-c <configuration path>] [-u]" 1>&2
@@ -28,7 +27,6 @@ done
 SRCDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/src" && pwd)"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXTRAS_DIR="${KLIPPER_PATH}/klippy/extras"
-BACKUP_DIR="${EXTRAS_DIR}/${BACKUP_DIR_NAME}"
 MOONRAKER_CONFIG_FILE="${MOONRAKER_CONFIG_DIR}/moonraker.conf"
 UPDATER_TEMPLATE="${REPO_DIR}/file_templates/moonraker_update.txt"
 REPO_ORIGIN="$(git -C "${REPO_DIR}" config --get remote.origin.url 2>/dev/null || true)"
@@ -102,11 +100,9 @@ record_git_exclude() {
 }
 
 install_modules() {
-    mkdir -p "${BACKUP_DIR}"
     for file in "${MODULES[@]}"; do
         local target="${EXTRAS_DIR}/${file}"
         local source="${SRCDIR}/${file}"
-        local backup="${BACKUP_DIR}/${file}"
         if [ ! -f "${source}" ]; then
             echo "[ERROR] Source file not found: ${source}"
             exit 1
@@ -115,10 +111,11 @@ install_modules() {
             echo "[SKIP] ${file} already linked."
             continue
         fi
-        if [ ! -e "${backup}" ] && [ -e "${target}" ]; then
-            cp -a "${target}" "${backup}"
+        if [ -e "${target}" ] || [ -L "${target}" ]; then
+            echo "[ERROR] Refusing to overwrite existing file ${target}."
+            echo "        Remove it manually if you want this repository to own that module."
+            exit 1
         fi
-        rm -f "${target}"
         ln -s "${source}" "${target}"
         record_git_exclude "${file}"
         echo "[OK] Linked ${file}"
@@ -129,18 +126,11 @@ restore_modules() {
     for file in "${MODULES[@]}"; do
         local target="${EXTRAS_DIR}/${file}"
         local source="${SRCDIR}/${file}"
-        local backup="${BACKUP_DIR}/${file}"
         if [ -L "${target}" ] && [ "$(readlink -f "${target}")" = "${source}" ]; then
             rm -f "${target}"
             echo "[OK] Removed link for ${file}"
         fi
-        if [ -e "${backup}" ]; then
-            cp -a "${backup}" "${target}"
-            rm -f "${backup}"
-            echo "[OK] Restored original ${file}"
-        fi
     done
-    rmdir "${BACKUP_DIR}" 2>/dev/null || true
 }
 
 add_updater() {
