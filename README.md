@@ -105,7 +105,7 @@ The installer appends this updater section:
 [update_manager accelerometer_rotation]
 type: git_repo
 path: /path/to/this/repo
-origin: __SET_YOUR_GIT_REMOTE__
+origin: https://github.com/JonasBouchard/klipper-accelerometer-rotation.git
 is_system_service: False
 ```
 
