@@ -109,10 +109,6 @@ origin: https://github.com/JonasBouchard/klipper-accelerometer-rotation.git
 is_system_service: False
 ```
 
-Replace `origin` with the real git remote if you want Moonraker updates
-to work. The installer fills it automatically when the repository has a
-configured `remote.origin.url`; otherwise it leaves the placeholder.
-
 ## Notes
 
 - This extension does not overwrite Klipper's built-in accelerometer
