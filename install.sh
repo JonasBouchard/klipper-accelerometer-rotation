@@ -26,10 +26,17 @@ done
 
 SRCDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/src" && pwd)"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ "$REPO_DIR" == "$HOME"* ]]; then
+    REPO_DIR_TILDE="~${REPO_DIR#$HOME}"
+else
+    REPO_DIR_TILDE="$REPO_DIR"
+fi
+
 EXTRAS_DIR="${KLIPPER_PATH}/klippy/extras"
 MOONRAKER_CONFIG_FILE="${MOONRAKER_CONFIG_DIR}/moonraker.conf"
 UPDATER_TEMPLATE="${REPO_DIR}/file_templates/moonraker_update.txt"
-REPO_ORIGIN="$(git -C "${REPO_DIR}" config --get remote.origin.url 2>/dev/null || true)"
+REPO_ORIGIN="https://github.com/JonasBouchard/klipper-accelerometer-rotation.git"
 
 verify_ready() {
     if [ "$EUID" -eq 0 ]; then
@@ -143,8 +150,8 @@ add_updater() {
     fi
     echo >> "${MOONRAKER_CONFIG_FILE}"
     sed \
-        -e "s#__REPO_PATH__#${REPO_DIR}#g" \
-        -e "s#__REPO_ORIGIN__#${REPO_ORIGIN:-__SET_YOUR_GIT_REMOTE__}#g" \
+        -e "s#__REPO_PATH__#${REPO_DIR_TILDE}#g" \
+        -e "s#__REPO_ORIGIN__#${REPO_ORIGIN}#g" \
         "${UPDATER_TEMPLATE}" \
         >> "${MOONRAKER_CONFIG_FILE}"
     echo >> "${MOONRAKER_CONFIG_FILE}"
